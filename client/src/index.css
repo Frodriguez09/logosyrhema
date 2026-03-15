@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colores personalizados */
+  --color-brand-black: #202020;
+  --color-brand-yellow: #EBD051;
+  --color-brand-gold: #C8A448;
+  --color-brand-white: #F8F5EC;
+  
+  /* Tipografía */
+  --font-family-sans: 'Ysabeau Office', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-white text-brand-black antialiased;
+  }
+}
