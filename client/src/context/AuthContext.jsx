@@ -5,27 +5,26 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true);
+
+ 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
-      // Aquí podrías verificar el token con el backend
-      setLoading(false);
     } else {
       localStorage.removeItem('token');
-      setLoading(false);
     }
+    setLoading(false);
   }, [token]);
 
   const login = (userData, userToken) => {
-    console.log('✅ Login exitoso:', userData); // Para debug
     setUser(userData);
     setToken(userToken);
+    setLoading(false);
   };
 
   const logout = () => {
-    console.log('👋 Logout'); // Para debug
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');

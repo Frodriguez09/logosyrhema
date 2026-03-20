@@ -1,14 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext';
+import { postsApi, categoriesApi } from '../../utils/api';
 
 export default function Dashboard() {
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('posts'); // 'posts' o 'categories'
-  const { token } = useContext(AuthContext);
+  const [activeTab, setActiveTab] = useState('posts');
 
   useEffect(() => {
     fetchPosts();
@@ -17,9 +15,7 @@ export default function Dashboard() {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get('/api/posts/admin/all', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+     const res = await postsApi.getAllAdmin(); 
       setPosts(res.data);
     } catch (error) {
       console.error('Error al cargar posts:', error);
@@ -30,7 +26,7 @@ export default function Dashboard() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('/api/categories');
+      const res = await categoriesApi.getAll();
       setCategories(res.data);
     } catch (error) {
       console.error('Error al cargar categorías:', error);
@@ -41,9 +37,7 @@ export default function Dashboard() {
     if (!window.confirm('¿Estás seguro de eliminar este post?')) return;
     
     try {
-      await axios.delete(`/api/posts/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await postsApi.delete(id); 
       setPosts(posts.filter(p => p._id !== id));
       alert('Post eliminado exitosamente');
     } catch (error) {
@@ -56,9 +50,7 @@ export default function Dashboard() {
     if (!window.confirm('¿Estás seguro de eliminar esta categoría?')) return;
     
     try {
-      await axios.delete(`/api/categories/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await categoriesApi.delete(id); 
       setCategories(categories.filter(c => c._id !== id));
       alert('Categoría eliminada exitosamente');
     } catch (error) {

@@ -1,17 +1,12 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext';
+import { categoriesApi } from '../../utils/api'; 
 
 export default function EditCategory() {
   const { id } = useParams();
-  const [category, setCategory] = useState({
-    name: '',
-    description: ''
-  });
+  const [category, setCategory] = useState({ name: '', description: '' });
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,7 +16,7 @@ export default function EditCategory() {
   const fetchCategory = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/categories');
+      const res = await categoriesApi.getAll();
       const foundCategory = res.data.find(c => c._id === id);
       if (foundCategory) {
         setCategory({
@@ -38,12 +33,9 @@ export default function EditCategory() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       setSubmitting(true);
-      await axios.put(`/api/categories/${id}`, category, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await categoriesApi.update(id, category);
       alert('Categoría actualizada exitosamente');
       navigate('/admin/dashboard');
     } catch (error) {

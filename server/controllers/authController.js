@@ -13,7 +13,11 @@ exports.register = async (req, res) => {
             password: hashedPassword
         });
 
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+        const token = jwt.sign(
+            {userId: user._id},
+            process.env.JWT_SECRET,
+            {expiresIn: '8h'}
+        )
         res.status(201).json({token, user: {id: user._id, username }});
     } catch (error){
         res.status(500).json({message: error.message});
@@ -29,7 +33,11 @@ exports.login = async (req, res) => {
             return res.status(401).json({message: 'Credenciales invalidas'});
         }
 
-        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET);
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '8h'}
+        )
         res.json({token, user:{id: user._id, username: user.username}});
     }catch(error){
         res.status(500).json({message: error.message});

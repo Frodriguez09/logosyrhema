@@ -1,17 +1,24 @@
 import { useState } from 'react';
 
+// Links generados desde tu dashboard de Stripe
+// https://dashboard.stripe.com/payment-links
+const STRIPE_LINKS = {
+  20:  import.meta.env.VITE_STRIPE_LINK_20  || '#',
+  50:  import.meta.env.VITE_STRIPE_LINK_50  || '#',
+  100: import.meta.env.VITE_STRIPE_LINK_100 || '#',
+};
+
 export default function StripeDonation({ message }) {
-  const [amount, setAmount] = useState(50); // MXN
-  
-  const defaultMessage = "Si este material ha sido de bendición para ti o para tu iglesia, y deseas apoyar para que sigamos creando más recursos de enseñanza bíblica, puedes hacerlo aquí. Tu aporte es voluntario y nos ayuda a continuar fortaleciendo a más creyentes. 🤍";
+  const [amount, setAmount] = useState(50);
+  const amounts = [20, 50, 100];
 
-  const amounts = [20, 50, 100,];
-
-  const handleDonate = async () => {
-    // Stripe Payment Link - Crea uno en tu dashboard de Stripe
-    // const stripePaymentLink = 'https://buy.stripe.com/tu_link_de_pago'; // Reemplaza con tu link
-    // window.open(stripePaymentLink, '_blank');
-    alert('La configuración de Stripe se completará próximamente.\n\nPor el momento, el botón de donación está en modo de prueba.');
+  const handleDonate = () => {
+    const link = STRIPE_LINKS[amount];
+    if (!link || link === '#') {
+      alert('La configuración de pagos no está lista aún.');
+      return;
+    }
+    window.open(link, '_blank', 'noopener,noreferrer');
   };
 
   return (

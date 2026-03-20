@@ -1,25 +1,17 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext';
+import { categoriesApi } from '../../utils/api';
 
 export default function NewCategory() {
-  const [category, setCategory] = useState({
-    name: '',
-    description: ''
-  });
+  const [category, setCategory] = useState({ name: '', description: '' });
   const [submitting, setSubmitting] = useState(false);
-  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       setSubmitting(true);
-      await axios.post('/api/categories', category, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await categoriesApi.create(category);
       alert('Categoría creada exitosamente');
       navigate('/admin/dashboard');
     } catch (error) {

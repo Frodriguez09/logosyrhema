@@ -7,9 +7,21 @@ const connectDB = require('./config/db');
 const app = express();
 
 // Middlewares
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: Origen no permitido → ${origin}`));
+    }
+  },
+  credentials: true,
+}));
+
 app.use(express.json());
-app.use('/uploads', express.static('usloads'));
+app.use('/uploads', express.static('uploads'));
 
 // Conect to DB
 connectDB();

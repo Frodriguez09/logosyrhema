@@ -17,12 +17,11 @@ export default function Contact() {
     setStatus({ type: '', message: '' });
 
     try {
-      // Reemplaza estos valores con los tuyos de EmailJS
       await emailjs.sendForm(
-        'service_go36ese',      // Tu Service ID
-        'template_b1k0oxd',     // Tu Template ID
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,   
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,  
         form.current,
-        'zfnm81E5uyx_uiXQL'       // Tu Public Key
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY   
       );
 
       setStatus({
@@ -149,7 +148,7 @@ export default function Contact() {
                   <div>
                     <h4 className="font-bold mb-1 text-brand-black">Email</h4>
                     <a href="mailto:info@logosrhema.com" className="text-brand-black/70 hover:text-brand-gold transition-colors">
-                      info@logosrhema.com
+                      info@logosyrhema.org
                     </a>
                   </div>
                 </div>

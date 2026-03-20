@@ -23,26 +23,7 @@ export default function About() {
             <h2 className="text-3xl md:text-4xl font-semibold mb-6 text-brand-black">
               "Fortalecer al creyente mediante la provisión de recursos de enseñanza bíblica de alta calidad."
             </h2>
-            {/* <p className="text-brand-black/80 text-lg leading-relaxed mb-4">
-              Transformar ideas en realidades digitales que impulsen el crecimiento y éxito de nuestros clientes.
-            </p>
-            <p className="text-brand-black/80 text-lg leading-relaxed mb-6">
-              Creemos en la innovación constante, la calidad excepcional y el compromiso total con cada proyecto que emprendemos.
-            </p> */}
-            {/* <div className="flex gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-3xl">✓</span>
-                <span className="font-semibold text-brand-black">Integridad</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-3xl">✓</span>
-                <span className="font-semibold text-brand-black">Verdad</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-3xl">✓</span>
-                <span className="font-semibold text-brand-black">Servicio</span>
-              </div>
-            </div> */}
+            
           </div>
           <div className="order-1 md:order-2">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-brand-gold/30 group">
@@ -75,12 +56,7 @@ export default function About() {
             <h2 className="text-xl md:text-2xl font-semibold mb-6 text-brand-black">
               "Ser el recurso fundamental para que cada creyente desarrolle un liderazgo sólido, convirtiéndose en un apoyo clave para su iglesia local, sus pastores y líderes, contribuyendo así eficazmente al cumplimiento de la Gran Comisión."
             </h2>
-            {/* <p className="text-brand-black/80 text-lg leading-relaxed mb-4">
-              Ser el socio tecnológico de confianza para empresas que buscan destacar en el mundo digital.
-            </p>
-            <p className="text-brand-black/80 text-lg leading-relaxed mb-6">
-              Aspiramos a construir soluciones que no solo cumplan expectativas, sino que las superen, estableciendo nuevos estándares en la industria.
-            </p> */}
+            
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <span className="text-brand-gold text-xl mt-1">🛡️</span>

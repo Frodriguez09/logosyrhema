@@ -1,7 +1,6 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { AuthContext } from "../../context/AuthContext";
+import { postsApi, categoriesApi, uploadImage } from "../../utils/api";
 import SimpleEditor from "../../components/SimpleEditor";
 
 export default function EditPost() {
@@ -21,7 +20,6 @@ export default function EditPost() {
   const [loading, setLoading] = useState(true);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
-  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const defaultDonationMessage =
@@ -34,7 +32,7 @@ export default function EditPost() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("/api/categories");
+      const res = await categoriesApi.getAll(); 
       setCategories(res.data);
     } catch (error) {
       console.error("Error al cargar categorías:", error);
@@ -44,9 +42,7 @@ export default function EditPost() {
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/posts/admin/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await postsApi.getAllAdmin();
       const foundPost = res.data.find((p) => p._id === id);
       if (foundPost) {
         setPost({
@@ -58,9 +54,7 @@ export default function EditPost() {
           showDonation: foundPost.showDonation || false,
           donationMessage: foundPost.donationMessage || "",
         });
-        if (foundPost.image) {
-          setImagePreview(foundPost.image);
-        }
+        if (foundPost.image) setImagePreview(foundPost.image);
       }
     } catch (error) {
       console.error("Error al cargar post:", error);
@@ -72,37 +66,10 @@ export default function EditPost() {
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setImageFile(file);
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
+    reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
-  };
-
-  const uploadImageToCloudinary = async () => {
-    if (!imageFile) return null;
-
-    const formData = new FormData();
-    formData.append("file", imageFile);
-    formData.append("upload_preset", "tu_upload_preset"); // Reemplaza
-    formData.append("cloud_name", "tu_cloud_name"); // Reemplaza
-
-    try {
-      setUploading(true);
-      const res = await axios.post(
-        "https://api.cloudinary.com/v1_1/tu_cloud_name/image/upload", // Reemplaza
-        formData,
-      );
-      return res.data.secure_url;
-    } catch (error) {
-      console.error("Error al subir imagen:", error);
-      alert("Error al subir la imagen");
-      return null;
-    } finally {
-      setUploading(false);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -113,7 +80,9 @@ export default function EditPost() {
 
       let imageUrl = post.image;
       if (imageFile) {
-        imageUrl = await uploadImageToCloudinary();
+        setUploading(true);
+        imageUrl = await uploadImage(imageFile);
+        setUploading(false);
         if (!imageUrl) return;
       }
 
@@ -125,10 +94,7 @@ export default function EditPost() {
           : "",
       };
 
-      await axios.put(`/api/posts/${id}`, postData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await postsApi.update(id, postData);
       alert("Post actualizado exitosamente");
       navigate("/admin/dashboard");
     } catch (error) {
@@ -136,6 +102,7 @@ export default function EditPost() {
       alert("Error al actualizar el post");
     } finally {
       setSubmitting(false);
+      setUploading(false);
     }
   };
 

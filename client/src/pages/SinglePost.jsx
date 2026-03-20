@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import { postsApi } from "../utils/api";
 import StripeDonation from '../components/StripeDonation';
-
+import fbIcon from '../assets/fb.png';
 
 export default function SinglePost() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shared, setShared] = useState(false);
 
   useEffect(() => {
     fetchPost();
@@ -17,7 +18,7 @@ export default function SinglePost() {
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/posts/${slug}`);
+      const res = await postsApi.getBySlug(slug);
       setPost(res.data);
     } catch (error) {
       console.error("Error al cargar post:", error);
@@ -25,6 +26,15 @@ export default function SinglePost() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Compartir en Facebook — abre el diálogo oficial de Facebook Share
+  const handleShareFacebook = () => {
+    const url = encodeURIComponent(window.location.href);
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    window.open(facebookShareUrl, '_blank', 'noopener,noreferrer,width=600,height=500');
+    setShared(true);
+    setTimeout(() => setShared(false), 3000);
   };
 
   // Extraer ID de video de YouTube
@@ -160,12 +170,21 @@ export default function SinglePost() {
               ← Ver más artículos
             </Link>
 
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
+              {/* Botón compartir Facebook */}
               <button
-                className="text-2xl hover:scale-110 transition-transform"
+                onClick={handleShareFacebook}
                 title="Compartir en Facebook"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-brand-gold/30 hover:border-brand-gold hover:shadow-md transition-all group"
               >
-                📘
+                <img
+                  src={fbIcon}
+                  alt="Facebook"
+                  className="w-6 h-6 object-contain group-hover:scale-110 transition-transform"
+                />
+                <span className="text-sm font-semibold text-brand-black/70 group-hover:text-brand-black transition-colors">
+                  {shared ? '¡Compartido!' : 'Compartir'}
+                </span>
               </button>
             </div>
           </div>

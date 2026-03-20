@@ -179,18 +179,33 @@ exports.getPost = async (req, res) => {
 // Actualizar post
 exports.updatePost = async (req, res) => {
   try {
-    const post = await Post.findByIdAndUpdate(
-      req.params.id,
-      req.body,  
-      { new: true }
-    )
-    .populate('author', 'username')
-    .populate('category', 'name slug');
-    
-    if (!post) {
-      return res.status(404).json({ message: 'Post no encontrado' });
+    // Solo permitir campos específicos
+    const allowedFields = ['title', 'content', 'category', 'videoUrl',
+                           'showDonation', 'donationMessage', 'published', 'image'];
+    const updateData = {};
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    });
+
+    // Regenerar slug si cambió el título
+    if (updateData.title) {
+      updateData.slug = updateData.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
     }
 
+    const post = await Post.findByIdAndUpdate(
+      req.params.id,
+      updateData, // ← Solo campos permitidos
+      { new: true, runValidators: true }
+    )
+      .populate('author', 'username')
+      .populate('category', 'name slug');
+
+    if (!post) return res.status(404).json({ message: 'Post no encontrado' });
     res.json(post);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -1,42 +1,32 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
+import { authApi } from '../../utils/api'; 
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, user, token } = useContext(AuthContext);
+  const { login, token } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Debug: ver estado actual
-  useEffect(() => {
-    console.log('Estado de autenticación:', { user, token });
-    if (token && user) {
-      console.log('✅ Usuario autenticado, redirigiendo...');
-      navigate('/admin/nuevo-post');
+   useEffect(() => {
+    if (token) {
+      navigate('/admin/dashboard', { replace: true });
     }
-  }, [token, user, navigate]);
-
+  }, [token, navigate]);
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      console.log('Intentando login con:', credentials.email);
-      const res = await axios.post('/api/auth/login', credentials);
-      console.log('Respuesta del servidor:', res.data);
-      
+      const res = await authApi.login(credentials);
       login(res.data.user, res.data.token);
-      
-      // Forzar navegación inmediata
-      setTimeout(() => {
-        navigate('/admin/nuevo-post', { replace: true });
-      }, 100);
+      navigate('/admin/dashboard', { replace: true });
+ 
     } catch (err) {
-      console.error('Error de login:', err);
       setError(err.response?.data?.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);

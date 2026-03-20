@@ -1,7 +1,6 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { AuthContext } from "../../context/AuthContext";
+import { postsApi, categoriesApi, uploadImage } from "../../utils/api";
 import SimpleEditor from "../../components/SimpleEditor";
 
 export default function NewPost() {
@@ -19,7 +18,6 @@ export default function NewPost() {
   const [submitting, setSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
-  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const defaultDonationMessage =
@@ -31,49 +29,20 @@ export default function NewPost() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("/api/categories");
+      const res = await categoriesApi.getAll();
       setCategories(res.data);
     } catch (error) {
       console.error("Error al cargar categorías:", error);
     }
   };
 
-  // Subir imagen a Cloudinary
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setImageFile(file);
-    // Crear preview
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
+    reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
-  };
-
-  const uploadImageToCloudinary = async () => {
-    if (!imageFile) return null;
-
-    const formData = new FormData();
-    formData.append("file", imageFile);
-    formData.append("upload_preset", "logos-rhema-blog"); // Reemplaza con tu preset
-    formData.append("cloud_name", "du8nb3lww"); // Reemplaza con tu cloud name
-
-    try {
-      setUploading(true);
-      const res = await axios.post(
-        "https://api.cloudinary.com/v1_1/du8nb3lww/image/upload", // Reemplaza
-        formData,
-      );
-      return res.data.secure_url;
-    } catch (error) {
-      console.error("Error al subir imagen:", error);
-      alert("Error al subir la imagen");
-      return null;
-    } finally {
-      setUploading(false);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -87,11 +56,12 @@ export default function NewPost() {
     try {
       setSubmitting(true);
 
-      // Subir imagen si existe
       let imageUrl = post.image;
       if (imageFile) {
-        imageUrl = await uploadImageToCloudinary();
-        if (!imageUrl) return; // Si falla la subida, no continuar
+        setUploading(true);
+        imageUrl = await uploadImage(imageFile);
+        setUploading(false);
+        if (!imageUrl) return;
       }
 
       const postData = {
@@ -102,10 +72,7 @@ export default function NewPost() {
           : "",
       };
 
-      await axios.post("/api/posts", postData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await postsApi.create(postData);
       alert("Post creado exitosamente");
       navigate("/admin/dashboard");
     } catch (error) {
@@ -113,6 +80,7 @@ export default function NewPost() {
       alert("Error al crear el post");
     } finally {
       setSubmitting(false);
+      setUploading(false);
     }
   };
 
