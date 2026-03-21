@@ -6,10 +6,10 @@ import React, {
   useMemo,
 } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { debounce } from "lodash";
 import BlogSkeleton from "../components/BlogSkeleton";
 import { truncateText } from "../utils/stripHtml";
+import { postsApi, categoriesApi } from "../utils/api";
 
 export default function Blog() {
   // Estados
@@ -85,7 +85,7 @@ export default function Blog() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("/api/categories");
+      const res = await categoriesApi.getAll();
       setCategories(res.data);
     } catch (error) {
       console.error("Error al cargar categorías:", error);
@@ -94,7 +94,7 @@ export default function Blog() {
 
   const fetchYears = async () => {
     try {
-      const res = await axios.get("/api/posts/years");
+      const res = await postsApi.getYears();
       setYears(res.data);
     } catch (error) {
       console.error("Error al cargar años:", error);
@@ -106,20 +106,19 @@ export default function Blog() {
       setLoading(true);
       const pageToFetch = reset ? 1 : currentPage;
 
-      const params = new URLSearchParams({
+      const params = {
         page: pageToFetch,
         limit: postsPerPage,
         ...(selectedCategory && { category: selectedCategory }),
         ...(selectedYear && { year: selectedYear }),
         ...(searchTerm && { search: searchTerm }),
-      });
+      };
 
-      const res = await axios.get(`/api/posts?${params}`);
+      const res = await postsApi.getAll(params);
 
       if (reset) {
         setPosts(res.data.posts);
       } else {
-        // Infinite scroll: agregar posts
         setPosts((prevPosts) => [...prevPosts, ...res.data.posts]);
       }
 
