@@ -21,7 +21,7 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4 text-brand-gold">Contacto</h4>
             <ul className="space-y-2 text-brand-white/80">
-              <li>Email: info@logosrhema.com</li>
+              <li>Email: info@logosyrhema.org</li>
               <li>San Luis Rio Colorado, Son, México</li>
             </ul>
           </div>
