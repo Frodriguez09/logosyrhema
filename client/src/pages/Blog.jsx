@@ -6,10 +6,10 @@ import React, {
   useMemo,
 } from "react";
 import { Link } from "react-router-dom";
+import { categoriesApi, postsApi } from "../utils/api";
 import { debounce } from "lodash";
 import BlogSkeleton from "../components/BlogSkeleton";
 import { truncateText } from "../utils/stripHtml";
-import { postsApi, categoriesApi } from "../utils/api";
 
 export default function Blog() {
   // Estados
@@ -86,18 +86,20 @@ export default function Blog() {
   const fetchCategories = async () => {
     try {
       const res = await categoriesApi.getAll();
-      setCategories(res.data);
+      setCategories(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Error al cargar categorías:", error);
+      setCategories([]);
     }
   };
 
   const fetchYears = async () => {
     try {
       const res = await postsApi.getYears();
-      setYears(res.data);
+      setYears(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Error al cargar años:", error);
+      setYears([]);
     }
   };
 
@@ -106,20 +108,19 @@ export default function Blog() {
       setLoading(true);
       const pageToFetch = reset ? 1 : currentPage;
 
-      const params = {
+    const res = await postsApi.getAll({
         page: pageToFetch,
         limit: postsPerPage,
         ...(selectedCategory && { category: selectedCategory }),
         ...(selectedYear && { year: selectedYear }),
         ...(searchTerm && { search: searchTerm }),
-      };
-
-      const res = await postsApi.getAll(params);
+      });
 
       if (reset) {
-        setPosts(res.data.posts);
+        setPosts(res.data.posts || []);
       } else {
-        setPosts((prevPosts) => [...prevPosts, ...res.data.posts]);
+        // Infinite scroll: agregar posts
+        setPosts((prevPosts) => [...prevPosts, ...(res.data.posts || [])]);
       }
 
       setPagination(res.data.pagination);
@@ -416,7 +417,7 @@ const BlogCardGrid = React.forwardRef(({ post }, ref) => {
           {post.title}
         </h3>
         <p className="text-brand-black/70 mb-4 line-clamp-3">
-          {truncateText(post.content, 150)}
+          {truncateText(post.content || "" , 150)}
         </p>
         <div className="flex items-center justify-between text-sm text-brand-black/60">
           <span>{new Date(post.createdAt).toLocaleDateString("es-MX")}</span>
@@ -467,7 +468,7 @@ const BlogCardList = React.forwardRef(({ post }, ref) => {
           {post.title}
         </h3>
         <p className="text-brand-black/70 mb-4 line-clamp-2">
-          {truncateText(post.content, 200)}
+          {truncateText(post.content || "" , 200)}
         </p>
         <div className="flex items-center gap-4 text-sm text-brand-black/60">
           <span className="flex items-center gap-1">
@@ -475,7 +476,7 @@ const BlogCardList = React.forwardRef(({ post }, ref) => {
             {post.views} vistas
           </span>
           <span>•</span>
-          <span>{Math.ceil(post.content.length / 1000)} min de lectura</span>
+          <span>{Math.ceil(post.content?.length || 0 / 1000)} min de lectura</span>
         </div>
       </div>
     </Link>
