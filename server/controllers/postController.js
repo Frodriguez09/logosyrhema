@@ -1,15 +1,24 @@
-const Post = require('../models/Post');
+const Post = require("../models/Post");
 
 // Crear post
 exports.createPost = async (req, res) => {
   try {
-    const { title, content, category, videoUrl, showDonation, donationMessage } = req.body; 
-    
-    const slug = title
+    const {
+      title,
+      content,
+      category,
+      videoUrl,
+      showDonation,
+      donationMessage,
+    } = req.body;
+
+    let slug = title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-    
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    const exists = await Post.findOne({ slug });
+    if (exists) slug = `${slug}-${Date.now()}`;
+
     const post = await Post.create({
       title,
       content,
@@ -18,13 +27,13 @@ exports.createPost = async (req, res) => {
       videoUrl,
       author: req.userId,
       image: req.body.image || null,
-      showDonation,  
-      donationMessage  
+      showDonation,
+      donationMessage,
     });
 
     const populatedPost = await Post.findById(post._id)
-      .populate('author', 'username email')
-      .populate('category', 'name slug');
+      .populate("author", "username email")
+      .populate("category", "name slug");
 
     res.status(201).json(populatedPost);
   } catch (error) {
@@ -35,13 +44,13 @@ exports.createPost = async (req, res) => {
 // Obtener todos los posts con paginación y filtros
 exports.getPosts = async (req, res) => {
   try {
-    const { 
-      category, 
-      search, 
+    const {
+      category,
+      search,
       year,
-      page = 1, 
+      page = 1,
       limit = 9,
-      sort = '-createdAt' 
+      sort = "-createdAt",
     } = req.query;
 
     let query = { published: true };
@@ -51,9 +60,10 @@ exports.getPosts = async (req, res) => {
 
     // Filtro por búsqueda
     if (search) {
+      const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } }
+        { title: { $regex: escaped, $options: "i" } },
+        { content: { $regex: escaped, $options: "i" } },
       ];
     }
 
@@ -69,8 +79,8 @@ exports.getPosts = async (req, res) => {
 
     // Ejecutar query con paginación
     const posts = await Post.find(query)
-      .populate('author', 'username')
-      .populate('category', 'name slug')
+      .populate("author", "username")
+      .populate("category", "name slug")
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit));
@@ -85,8 +95,8 @@ exports.getPosts = async (req, res) => {
         totalPages: Math.ceil(total / parseInt(limit)),
         totalPosts: total,
         hasMore: skip + posts.length < total,
-        limit: parseInt(limit)
-      }
+        limit: parseInt(limit),
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -100,16 +110,16 @@ exports.getAvailableYears = async (req, res) => {
       { $match: { published: true } },
       {
         $group: {
-          _id: { $year: '$createdAt' },
-          count: { $sum: 1 }
-        }
+          _id: { $year: "$createdAt" },
+          count: { $sum: 1 },
+        },
       },
-      { $sort: { _id: -1 } }
+      { $sort: { _id: -1 } },
     ]);
 
-    const yearsData = years.map(y => ({
+    const yearsData = years.map((y) => ({
       year: y._id,
-      count: y.count
+      count: y.count,
     }));
 
     res.json(yearsData);
@@ -124,31 +134,31 @@ exports.getBlogStats = async (req, res) => {
     const totalPosts = await Post.countDocuments({ published: true });
     const totalViews = await Post.aggregate([
       { $match: { published: true } },
-      { $group: { _id: null, total: { $sum: '$views' } } }
+      { $group: { _id: null, total: { $sum: "$views" } } },
     ]);
 
     const postsByCategory = await Post.aggregate([
       { $match: { published: true } },
       {
         $group: {
-          _id: '$category',
-          count: { $sum: 1 }
-        }
+          _id: "$category",
+          count: { $sum: 1 },
+        },
       },
       {
         $lookup: {
-          from: 'categories',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'categoryInfo'
-        }
-      }
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryInfo",
+        },
+      },
     ]);
 
     res.json({
       totalPosts,
       totalViews: totalViews[0]?.total || 0,
-      postsByCategory
+      postsByCategory,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -159,11 +169,11 @@ exports.getBlogStats = async (req, res) => {
 exports.getPost = async (req, res) => {
   try {
     const post = await Post.findOne({ slug: req.params.slug })
-      .populate('author', 'username email')
-      .populate('category', 'name slug');
-    
+      .populate("author", "username email")
+      .populate("category", "name slug");
+
     if (!post) {
-      return res.status(404).json({ message: 'Post no encontrado' });
+      return res.status(404).json({ message: "Post no encontrado" });
     }
 
     // Incrementar vistas
@@ -180,10 +190,18 @@ exports.getPost = async (req, res) => {
 exports.updatePost = async (req, res) => {
   try {
     // Solo permitir campos específicos
-    const allowedFields = ['title', 'content', 'category', 'videoUrl',
-                           'showDonation', 'donationMessage', 'published', 'image'];
+    const allowedFields = [
+      "title",
+      "content",
+      "category",
+      "videoUrl",
+      "showDonation",
+      "donationMessage",
+      "published",
+      "image",
+    ];
     const updateData = {};
-    allowedFields.forEach(field => {
+    allowedFields.forEach((field) => {
       if (req.body[field] !== undefined) {
         updateData[field] = req.body[field];
       }
@@ -193,19 +211,19 @@ exports.updatePost = async (req, res) => {
     if (updateData.title) {
       updateData.slug = updateData.title
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
     }
 
     const post = await Post.findByIdAndUpdate(
       req.params.id,
       updateData, // ← Solo campos permitidos
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     )
-      .populate('author', 'username')
-      .populate('category', 'name slug');
+      .populate("author", "username")
+      .populate("category", "name slug");
 
-    if (!post) return res.status(404).json({ message: 'Post no encontrado' });
+    if (!post) return res.status(404).json({ message: "Post no encontrado" });
     res.json(post);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -216,12 +234,12 @@ exports.updatePost = async (req, res) => {
 exports.deletePost = async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
-    
+
     if (!post) {
-      return res.status(404).json({ message: 'Post no encontrado' });
+      return res.status(404).json({ message: "Post no encontrado" });
     }
 
-    res.json({ message: 'Post eliminado exitosamente' });
+    res.json({ message: "Post eliminado exitosamente" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -231,8 +249,8 @@ exports.deletePost = async (req, res) => {
 exports.getAllPostsAdmin = async (req, res) => {
   try {
     const posts = await Post.find()
-      .populate('author', 'username')
-      .populate('category', 'name slug')
+      .populate("author", "username")
+      .populate("category", "name slug")
       .sort({ createdAt: -1 });
 
     res.json(posts);
