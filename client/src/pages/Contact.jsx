@@ -1,6 +1,24 @@
 import { useState, useRef } from 'react';
 import emailjs from '@emailjs/browser';
 
+const ObfuscatedEmail = ({ user, domain }) => {
+  const handleClick = () => {
+    window.location.href = `mailto:${user}@${domain}`;
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className="text-brand-black/70 hover:text-brand-gold transition-colors cursor-pointer"
+      aria-label="Enviar email"
+    >
+      {user}
+      <span aria-hidden="true">&#64;</span>
+      {domain}
+    </button>
+  );
+};
+
 export default function Contact() {
   const form = useRef();
   const [formData, setFormData] = useState({
@@ -147,9 +165,7 @@ export default function Contact() {
                   <span className="text-3xl mr-4">📧</span>
                   <div>
                     <h4 className="font-bold mb-1 text-brand-black">Email</h4>
-                    <a href="mailto:info@logosrhema.com" className="text-brand-black/70 hover:text-brand-gold transition-colors">
-                      info@logosyrhema.org
-                    </a>
+                    <ObfuscatedEmail user="info" domain="logosyrhema.org" />
                   </div>
                 </div>
                 <div className="flex items-start">
