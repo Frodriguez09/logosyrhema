@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
-// Links generados desde tu dashboard de Stripe
-// https://dashboard.stripe.com/payment-links
 const STRIPE_LINKS = {
   20:  import.meta.env.VITE_STRIPE_LINK_20  || '#',
   50:  import.meta.env.VITE_STRIPE_LINK_50  || '#',
   100: import.meta.env.VITE_STRIPE_LINK_100 || '#',
 };
+
+const defaultMessage = 'Tu donación nos ayuda a seguir compartiendo la palabra. ¡Gracias por tu apoyo!';
 
 export default function StripeDonation({ message }) {
   const [amount, setAmount] = useState(50);
@@ -14,10 +14,6 @@ export default function StripeDonation({ message }) {
 
   const handleDonate = () => {
     const link = STRIPE_LINKS[amount];
-    if (!link || link === '#') {
-      alert('La configuración de pagos no está lista aún.');
-      return;
-    }
     window.open(link, '_blank', 'noopener,noreferrer');
   };
 
@@ -33,7 +29,7 @@ export default function StripeDonation({ message }) {
       </div>
 
       {/* Montos predefinidos */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6 ">
+      <div className="grid grid-cols-3 gap-3 mb-6">
         {amounts.map((amt) => (
           <button
             key={amt}
@@ -48,29 +44,7 @@ export default function StripeDonation({ message }) {
           </button>
         ))}
       </div>
-
-      {/* Monto personalizado */}
-      <div className="mb-6">
-        <label className="block text-sm font-semibold text-brand-black mb-2">
-          O ingresa un monto personalizado:
-        </label>
-        <div className="flex gap-2">
-          <span className="px-4 py-3 bg-brand-white border-2 border-brand-gold/30 rounded-lg font-bold">
-            $
-          </span>
-          <input
-            type="number"
-            min="10"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
-            className="flex-1 px-4 py-3 border-2 border-brand-gold/30 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold bg-brand-white text-brand-black font-semibold"
-          />
-          <span className="px-4 py-3 bg-brand-white border-2 border-brand-gold/30 rounded-lg font-bold">
-            MXN
-          </span>
-        </div>
-      </div>
-
+ 
       {/* Botón de donación */}
       <button
         onClick={handleDonate}
@@ -78,7 +52,7 @@ export default function StripeDonation({ message }) {
       >
         💳 Donar ${amount} MXN con Stripe
       </button>
-
+ 
       <p className="text-center text-sm text-brand-black/60 mt-4">
         Pagos seguros procesados por Stripe
       </p>

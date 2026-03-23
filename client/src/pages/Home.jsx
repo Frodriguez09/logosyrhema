@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import heroImage from '../assets/hero.jpg'; // Ajusta la extensión según tu imagen
+import heroImage from '../assets/hero.jpg';
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
             src={heroImage} 
             alt="Logos & Rhema Hero" 
             className="w-full h-full object-cover"
-            loading="lazy"  // Para hero usa "eager", para otras imágenes usa "lazy"
+            loading="lazy"
           />
           
           {/* Degradado superior con color de marca */}
@@ -34,7 +34,7 @@ export default function Home() {
         {/* Contenido del Hero */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
           <h1 className="text-5xl md:text-7xl font-bold text-brand-yellow border-brand-gold animate-fade-in-up drop-shadow-lg mb-4 ">
-              Instituto Biblico Logos y Rhema
+              Instituto Bíblico Logos y Rhema
           </h1>
           <h2 className='text-5xl md:text-7xl font-semibold text-brand-white animate-fade-in-up drop-shadow-2xl'>
             Palabra que forma,

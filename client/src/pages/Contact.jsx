@@ -49,7 +49,7 @@ export default function Contact() {
             Contáctanos
           </h1>
           <p className="text-2xl text-brand-black/70">
-            Completa el formulario y conversemos sobre nuevas oportunidades de formación para tu congregación.
+            Completa el formulario y platiquemos sobre nuevas oportunidades de formación para tu congregación.
           </p>
         </div>
 
@@ -161,33 +161,6 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-
-            {/* <div className="bg-linear-to-br from-brand-gold/20 to-brand-yellow/20 border-2 border-brand-gold/30 rounded-xl p-8">
-              <h3 className="text-2xl font-bold mb-4 text-brand-black">Horario de Atención</h3>
-              <p className="text-brand-black/80 font-medium">
-                Lunes a Viernes: 9:00 AM - 6:00 PM<br />
-                Sábado: 10:00 AM - 2:00 PM<br />
-                Domingo: Cerrado
-              </p>
-            </div> */}
-
-            {/* <div className="bg-linear-to-br from-brand-white to-brand-gold/10 border-2 border-brand-gold/30 rounded-xl p-8">
-              <h3 className="text-2xl font-bold mb-4 text-brand-black">Síguenos</h3>
-              <div className="flex gap-4">
-                <a href="#" className="w-12 h-12 bg-brand-gold hover:bg-brand-yellow rounded-lg flex items-center justify-center text-2xl transition-all hover:scale-110">
-                  📘
-                </a>
-                <a href="#" className="w-12 h-12 bg-brand-gold hover:bg-brand-yellow rounded-lg flex items-center justify-center text-2xl transition-all hover:scale-110">
-                  📷
-                </a>
-                <a href="#" className="w-12 h-12 bg-brand-gold hover:bg-brand-yellow rounded-lg flex items-center justify-center text-2xl transition-all hover:scale-110">
-                  🐦
-                </a>
-                <a href="#" className="w-12 h-12 bg-brand-gold hover:bg-brand-yellow rounded-lg flex items-center justify-center text-2xl transition-all hover:scale-110">
-                  💼
-                </a>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>

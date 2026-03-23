@@ -86,7 +86,7 @@ export default function About() {
         {/* Call to Action */}
         <CallToAction
           title='¿Estás listo para cumplir tu llamado?'
-          description='Da el siguiente paso en tu crecimiento y prepárate para servir con firmeza y propósito. “Id y haced discípulos a todas las naciones…” (Mt. 28:19). Estamos aquí para ayudarte a formarte, liderar y fortalecer tu iglesia'
+          description='Da el siguiente paso en tu crecimiento y prepárate para servir con firmeza y propósito. “Id y haced discípulos a todas las naciones…” (Mt. 28:19). Estamos aquí para ayudarte a formarte, liderar y fortalecer tu iglesia.'
         />
       </div>
     </div>
