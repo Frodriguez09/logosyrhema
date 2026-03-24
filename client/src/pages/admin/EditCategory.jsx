@@ -36,11 +36,10 @@ export default function EditCategory() {
     try {
       setSubmitting(true);
       await categoriesApi.update(id, category);
-      alert('Categoría actualizada exitosamente');
       navigate('/admin/dashboard');
     } catch (error) {
       console.error('Error al actualizar categoría:', error);
-      alert('Error al actualizar la categoría');
+      // alert('Error al actualizar la categoría');
     } finally {
       setSubmitting(false);
     }

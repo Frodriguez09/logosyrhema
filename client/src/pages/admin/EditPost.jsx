@@ -95,11 +95,10 @@ export default function EditPost() {
       };
 
       await postsApi.update(id, postData);
-      alert("Post actualizado exitosamente");
       navigate("/admin/dashboard");
     } catch (error) {
       console.error("Error al actualizar post:", error);
-      alert("Error al actualizar el post");
+      // alert("Error al actualizar el post");
     } finally {
       setSubmitting(false);
       setUploading(false);

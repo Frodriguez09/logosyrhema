@@ -37,7 +37,7 @@ export default function NewCategory() {
               type="text"
               value={category.name}
               onChange={(e) => setCategory({ ...category, name: e.target.value })}
-              placeholder="Ej: Tecnología, Diseño, Marketing"
+              placeholder="Ej: Devocional, Cursos, Información"
               className="w-full px-4 py-3 border-2 border-brand-gold/30 rounded-lg focus:ring-2 focus:ring-brand-gold focus:border-brand-gold bg-brand-white text-brand-black"
               required
             />
